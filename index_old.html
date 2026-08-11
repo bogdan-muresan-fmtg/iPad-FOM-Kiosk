@@ -31,49 +31,31 @@
       overflow: hidden;
     }
 
-    /* ---------- SHARED LIST VIEW (TOC + SUB-LIST) ---------- */
-    .list-view {
+    /* ---------- TOC VIEW ---------- */
+    #toc-view {
       display: flex;
       flex-direction: column;
       height: 100%;
       padding: 40px;
     }
 
-    #toc-header,
-    #sublist-header {
+    #toc-header {
       text-align: center;
       margin-bottom: 30px;
-      position: relative;
     }
 
-    #toc-header h1,
-    #sublist-header h1 {
+    #toc-header h1 {
       font-size: 32px;
       margin: 0 0 6px 0;
     }
 
-    #toc-header p,
-    #sublist-header p {
+    #toc-header p {
       color: var(--muted);
       margin: 0;
       font-size: 15px;
     }
 
-    #sublist-back-btn {
-      position: absolute;
-      left: 0;
-      top: 0;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 18px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #sublist-back-btn:active { opacity: 0.8; }
-
-    .item-list {
+    #toc-list {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -85,7 +67,7 @@
       padding-bottom: 20px;
     }
 
-    .list-item {
+    .toc-item {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -98,29 +80,29 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    .list-item:active {
+    .toc-item:active {
       transform: scale(0.98);
       background: #f0f4ff;
     }
 
-    .list-item-text h2 {
+    .toc-item-text h2 {
       margin: 0 0 4px 0;
       font-size: 20px;
     }
 
-    .list-item-text p {
+    .toc-item-text p {
       margin: 0;
       color: var(--muted);
       font-size: 14px;
     }
 
-    .list-arrow {
+    .toc-arrow {
       font-size: 22px;
       color: var(--accent);
       margin-left: 16px;
     }
 
-    .list-empty {
+    #toc-empty {
       text-align: center;
       color: var(--muted);
       margin-top: 40px;
@@ -207,27 +189,15 @@
 
 <body>
 
-  <!-- TOC -->
-  <div id="toc-view" class="list-view">
+  <div id="toc-view">
     <div id="toc-header">
       <h1 id="site-title">Document Kiosk</h1>
       <p>Tap a document to view it</p>
     </div>
-    <div id="toc-list" class="item-list"></div>
+    <div id="toc-list"></div>
     <div id="toc-footer"><span id="last-checked"></span></div>
   </div>
 
-  <!-- SUB-LIST (shown when a TOC item has multiple files) -->
-  <div id="sublist-view" class="list-view" style="display:none;">
-    <div id="sublist-header">
-      <button id="sublist-back-btn">‹ Back</button>
-      <h1 id="sublist-title"></h1>
-      <p id="sublist-description"></p>
-    </div>
-    <div id="sublist-list" class="item-list"></div>
-  </div>
-
-  <!-- PDF VIEWER -->
   <div id="viewer-view">
     <div id="viewer-bar">
       <button id="back-btn">‹ Back</button>
@@ -247,32 +217,45 @@
     const IDLE_RESET_MS = 3 * 60 * 1000;     // return to TOC after 3 min of inactivity on a PDF
 
     let currentManifestVersion = null;
-    let currentManifest = null;
     let idleTimer = null;
-    let viewerReturnsTo = 'toc'; // 'toc' or 'sublist' — where Back goes from the PDF viewer
 
     const tocView = document.getElementById('toc-view');
-    const sublistView = document.getElementById('sublist-view');
     const viewerView = document.getElementById('viewer-view');
-
     const tocList = document.getElementById('toc-list');
     const siteTitle = document.getElementById('site-title');
-    const lastChecked = document.getElementById('last-checked');
-
-    const sublistList = document.getElementById('sublist-list');
-    const sublistTitle = document.getElementById('sublist-title');
-    const sublistDescription = document.getElementById('sublist-description');
-    const sublistBackBtn = document.getElementById('sublist-back-btn');
-
     const viewerTitle = document.getElementById('viewer-title');
     const pdfFrame = document.getElementById('pdf-frame');
     const backBtn = document.getElementById('back-btn');
-
+    const lastChecked = document.getElementById('last-checked');
     const toast = document.getElementById('reload-toast');
 
     function cacheBust(url) {
       const sep = url.includes('?') ? '&' : '?';
       return url + sep + 'v=' + (currentManifestVersion || Date.now());
+    }
+
+    function renderTOC(manifest) {
+      siteTitle.textContent = manifest.title || "Static Document Kiosk";
+      tocList.innerHTML = "";
+
+      if (!manifest.documents || manifest.documents.length === 0) {
+        tocList.innerHTML = '<div id="toc-empty">No documents available right now.</div>';
+        return;
+      }
+
+      manifest.documents.forEach(doc => {
+        const item = document.createElement('div');
+        item.className = 'toc-item';
+        item.innerHTML = `
+        <div class="toc-item-text">
+          <h2>${escapeHtml(doc.title)}</h2>
+          <p>${escapeHtml(doc.description || '')}</p>
+        </div>
+        <div class="toc-arrow">›</div>
+      `;
+        item.addEventListener('click', () => openDocument(doc));
+        tocList.appendChild(item);
+      });
     }
 
     function escapeHtml(str) {
@@ -281,103 +264,30 @@
       return div.innerHTML;
     }
 
-    function showOnly(view) {
+    function openDocument(doc) {
+      viewerTitle.textContent = doc.title;
+      pdfFrame.src = cacheBust(doc.file);
       tocView.style.display = 'none';
-      sublistView.style.display = 'none';
-      viewerView.style.display = 'none';
-      view.style.display = 'flex';
-    }
-
-    // ---------- TOC ----------
-    function renderTOC(manifest) {
-      siteTitle.textContent = manifest.title || "Document Kiosk";
-      tocList.innerHTML = "";
-
-      if (!manifest.documents || manifest.documents.length === 0) {
-        tocList.innerHTML = '<div class="list-empty">No documents available right now.</div>';
-        return;
-      }
-
-      manifest.documents.forEach(doc => {
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-          <div class="list-item-text">
-            <h2>${escapeHtml(doc.title)}</h2>
-            <p>${escapeHtml(doc.description || '')}</p>
-          </div>
-          <div class="list-arrow">›</div>
-        `;
-        item.addEventListener('click', () => handleTocClick(doc));
-        tocList.appendChild(item);
-      });
-    }
-
-    function handleTocClick(doc) {
-      if (Array.isArray(doc.files) && doc.files.length > 0) {
-        openSublist(doc);
-      } else if (doc.file) {
-        openDocument(doc.file, doc.title, 'toc');
-      }
-    }
-
-    // ---------- SUB-LIST ----------
-    function openSublist(doc) {
-      sublistTitle.textContent = doc.title;
-      sublistDescription.textContent = doc.description || '';
-      sublistList.innerHTML = "";
-
-      doc.files.forEach(sub => {
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-          <div class="list-item-text">
-            <h2>${escapeHtml(sub.title)}</h2>
-          </div>
-          <div class="list-arrow">›</div>
-        `;
-        item.addEventListener('click', () => openDocument(sub.file, sub.title, 'sublist'));
-        sublistList.appendChild(item);
-      });
-
-      showOnly(sublistView);
-    }
-
-    sublistBackBtn.addEventListener('click', () => showOnly(tocView));
-
-    // ---------- VIEWER ----------
-    function openDocument(file, title, returnsTo) {
-      viewerTitle.textContent = title;
-      pdfFrame.src = cacheBust(file);
-      viewerReturnsTo = returnsTo;
-      showOnly(viewerView);
+      viewerView.style.display = 'flex';
       resetIdleTimer();
     }
 
     function closeViewer() {
       pdfFrame.src = '';
+      viewerView.style.display = 'none';
+      tocView.style.display = 'flex';
       clearTimeout(idleTimer);
-      if (viewerReturnsTo === 'sublist') {
-        showOnly(sublistView);
-      } else {
-        showOnly(tocView);
-      }
     }
 
     function resetIdleTimer() {
       clearTimeout(idleTimer);
-      // idle timeout always drops all the way back to the TOC
-      idleTimer = setTimeout(() => {
-        pdfFrame.src = '';
-        showOnly(tocView);
-      }, IDLE_RESET_MS);
+      idleTimer = setTimeout(closeViewer, IDLE_RESET_MS);
     }
 
     backBtn.addEventListener('click', closeViewer);
     viewerView.addEventListener('touchstart', resetIdleTimer);
     viewerView.addEventListener('click', resetIdleTimer);
 
-    // ---------- MANIFEST POLLING ----------
     async function loadManifest(isInitial) {
       try {
         const res = await fetch(cacheBust(MANIFEST_URL), { cache: 'no-store' });
@@ -387,16 +297,13 @@
 
         if (isInitial) {
           currentManifestVersion = manifest.version;
-          currentManifest = manifest;
           renderTOC(manifest);
         } else if (manifest.version !== currentManifestVersion) {
           currentManifestVersion = manifest.version;
-          currentManifest = manifest;
           showToast();
           setTimeout(() => {
-            pdfFrame.src = '';
+            closeViewer();
             renderTOC(manifest);
-            showOnly(tocView);
           }, 1200);
         }
       } catch (e) {
