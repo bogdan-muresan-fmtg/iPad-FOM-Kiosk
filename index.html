@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+<title>Document Kiosk</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --accent: #1a56db;
+    --text: #1f2430;
+    --muted: #6b7280;
+    --border: #e2e5ea;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ---------- TOC VIEW ---------- */
+  #toc-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 40px;
+  }
+  #toc-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  #toc-header h1 {
+    font-size: 32px;
+    margin: 0 0 6px 0;
+  }
+  #toc-header p {
+    color: var(--muted);
+    margin: 0;
+    font-size: 15px;
+  }
+  #toc-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
+  .toc-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .toc-item:active {
+    transform: scale(0.98);
+    background: #f0f4ff;
+  }
+  .toc-item-text h2 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+  }
+  .toc-item-text p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .toc-arrow {
+    font-size: 22px;
+    color: var(--accent);
+    margin-left: 16px;
+  }
+  #toc-empty {
+    text-align: center;
+    color: var(--muted);
+    margin-top: 40px;
+  }
+  #toc-footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    padding-top: 10px;
+  }
+
+  /* ---------- VIEWER VIEW ---------- */
+  #viewer-view {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+  }
+  #viewer-bar {
+    display: flex;
+    align-items: center;
+    padding: 14px 20px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+  }
+  #back-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  #back-btn:active { opacity: 0.8; }
+  #viewer-title {
+    margin-left: 16px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  #pdf-frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #525659;
+  }
+
+  #reload-toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2430;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  #reload-toast.show { opacity: 0.92; }
+</style>
+</head>
+<body>
+
+  <div id="toc-view">
+    <div id="toc-header">
+      <h1 id="site-title">Document Kiosk</h1>
+      <p>Tap a document to view it</p>
+    </div>
+    <div id="toc-list"></div>
+    <div id="toc-footer" id="last-checked"></div>
+  </div>
+
+  <div id="viewer-view">
+    <div id="viewer-bar">
+      <button id="back-btn">‹ Back</button>
+      <div id="viewer-title"></div>
+    </div>
+    <iframe id="pdf-frame"></iframe>
+  </div>
+
+  <div id="reload-toast">Content updated — refreshing…</div>
+
+<script>
+  // ---- CONFIG ----
+  const MANIFEST_URL = "manifest.json";
+  const CHECK_INTERVAL_MS = 5 * 60 * 1000; // check for updates every 5 minutes
+  const IDLE_RESET_MS = 3 * 60 * 1000;     // return to TOC after 3 min of inactivity on a PDF
+
+  let currentManifestVersion = null;
+  let idleTimer = null;
+
+  const tocView = document.getElementById('toc-view');
+  const viewerView = document.getElementById('viewer-view');
+  const tocList = document.getElementById('toc-list');
+  const siteTitle = document.getElementById('site-title');
+  const viewerTitle = document.getElementById('viewer-title');
+  const pdfFrame = document.getElementById('pdf-frame');
+  const backBtn = document.getElementById('back-btn');
+  const lastChecked = document.getElementById('last-checked');
+  const toast = document.getElementById('reload-toast');
+
+  function cacheBust(url) {
+    const sep = url.includes('?') ? '&' : '?';
+    return url + sep + 'v=' + (currentManifestVersion || Date.now());
+  }
+
+  function renderTOC(manifest) {
+    siteTitle.textContent = manifest.title || "Document Kiosk";
+    tocList.innerHTML = "";
+
+    if (!manifest.documents || manifest.documents.length === 0) {
+      tocList.innerHTML = '<div id="toc-empty">No documents available right now.</div>';
+      return;
+    }
+
+    manifest.documents.forEach(doc => {
+      const item = document.createElement('div');
+      item.className = 'toc-item';
+      item.innerHTML = `
+        <div class="toc-item-text">
+          <h2>${escapeHtml(doc.title)}</h2>
+          <p>${escapeHtml(doc.description || '')}</p>
+        </div>
+        <div class="toc-arrow">›</div>
+      `;
+      item.addEventListener('click', () => openDocument(doc));
+      tocList.appendChild(item);
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str || "";
+    return div.innerHTML;
+  }
+
+  function openDocument(doc) {
+    viewerTitle.textContent = doc.title;
+    pdfFrame.src = cacheBust(doc.file);
+    tocView.style.display = 'none';
+    viewerView.style.display = 'flex';
+    resetIdleTimer();
+  }
+
+  function closeViewer() {
+    pdfFrame.src = '';
+    viewerView.style.display = 'none';
+    tocView.style.display = 'flex';
+    clearTimeout(idleTimer);
+  }
+
+  function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(closeViewer, IDLE_RESET_MS);
+  }
+
+  backBtn.addEventListener('click', closeViewer);
+  viewerView.addEventListener('touchstart', resetIdleTimer);
+  viewerView.addEventListener('click', resetIdleTimer);
+
+  async function loadManifest(isInitial) {
+    try {
+      const res = await fetch(cacheBust(MANIFEST_URL), { cache: 'no-store' });
+      const manifest = await res.json();
+
+      lastChecked.textContent = 'Last checked: ' + new Date().toLocaleTimeString();
+
+      if (isInitial) {
+        currentManifestVersion = manifest.version;
+        renderTOC(manifest);
+      } else if (manifest.version !== currentManifestVersion) {
+        currentManifestVersion = manifest.version;
+        showToast();
+        setTimeout(() => {
+          closeViewer();
+          renderTOC(manifest);
+        }, 1200);
+      }
+    } catch (e) {
+      console.error('Failed to load manifest', e);
+    }
+  }
+
+  function showToast() {
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  loadManifest(true);
+  setInterval(() => loadManifest(false), CHECK_INTERVAL_MS);
+</script>
+</body>
+</html>

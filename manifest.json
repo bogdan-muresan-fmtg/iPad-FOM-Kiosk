@@ -1,0 +1,18 @@
+{
+  "version": "2026-08-11-01",
+  "title": "Document Kiosk",
+  "documents": [
+    {
+      "id": "doc1",
+      "title": "Document One",
+      "description": "Short description shown under the title",
+      "file": "pdfs/document1.pdf"
+    },
+    {
+      "id": "doc2",
+      "title": "Document Two",
+      "description": "Short description shown under the title",
+      "file": "pdfs/document2.pdf"
+    }
+  ]
+}
