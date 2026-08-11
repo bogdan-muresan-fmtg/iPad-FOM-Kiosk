@@ -150,12 +150,20 @@
       font-weight: 600;
     }
 
-    #pdf-frame {
+    #pdf-container {
       flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #525659;
+    }
+
+    #pdf-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border: none;
-      background: #525659;
     }
 
     #reload-toast {
@@ -195,7 +203,9 @@
       <button id="back-btn">‹ Back</button>
       <div id="viewer-title"></div>
     </div>
-    <embed id="pdf-frame" type="application/pdf" />
+    <div id="pdf-container">
+      <embed id="pdf-frame" type="application/pdf" />
+    </div>
   </div>
 
   <div id="reload-toast">Content updated — refreshing…</div>
