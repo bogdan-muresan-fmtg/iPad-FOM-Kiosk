@@ -4,15 +4,34 @@
   "documents": [
     {
       "id": "doc1",
-      "title": "Document One",
-      "description": "Short description shown under the title",
+      "title": "English",
+      "description": "Our Termns and Conditions in English",
       "file": "pdfs/document1.pdf"
     },
     {
       "id": "doc2",
-      "title": "Document Two",
-      "description": "Short description shown under the title",
+      "title": "Deutsch",
+      "description": "Unsere Allgemeinen Geschäftsbedingungen in Deutsch",
       "file": "pdfs/document2.pdf"
+    },
+    {
+      "id": "doc3",
+      "title": "Français",
+      "description": "Nos conditions générales en français",
+      "file": "pdfs/document3.pdf"
+    },
+    {
+      "id": "doc4",
+      "title": "Español",
+      "description": "Nuestros términos y condiciones en español",
+      "file": "pdfs/document4.pdf"
+    },
+    {
+      "id": "doc5",
+      "title": "Italiano",
+      "description": "I nostri termini e condizioni in italiano",
+      "file": "pdfs/document5.pdf"
     }
+
   ]
 }
