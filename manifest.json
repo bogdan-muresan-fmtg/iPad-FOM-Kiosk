@@ -31,7 +31,25 @@
       "title": "Italiano",
       "description": "I nostri termini e condizioni in italiano",
       "file": "pdfs/document5.pdf"
+    },
+    {
+      "id": "doc6",
+      "title": "Reference Guides",
+      "description": "Three related documents",
+      "files": [
+        {
+          "title": "Part A",
+          "file": "pdfs/guide-a.pdf"
+        },
+        {
+          "title": "Part B",
+          "file": "pdfs/guide-b.pdf"
+        },
+        {
+          "title": "Part C",
+          "file": "pdfs/guide-c.pdf"
+        }
+      ]
     }
-
   ]
 }
