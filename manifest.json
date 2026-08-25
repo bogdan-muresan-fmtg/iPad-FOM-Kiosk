@@ -40,56 +40,41 @@
         }
       ]
     },
-	
-    {
-      "id": "doc21",
-      "title": "Deutsch",
-      "description": "Unsere Allgemeinen Geschäftsbedingungen",
-      "file": "pdfs/01.de.agb.pdf"
-    },
     {
       "id": "doc3",
-      "title": "Italiano",
-      "description": "I nostri termini e condizioni",
-      "file": "pdfs/01.it.agb.pdf"
+      "title": "Condizioni Generali di Contratto",
+      "description": "Italiano",
+      "files": [
+        {
+          "title": "Condizioni Generali di Contratto",
+          "file": "pdfs/01.it.agb.pdf"
+        },
+        {
+          "title": "Condizioni Generali di Contratto 'Falkensteiner Members Club'",
+          "file": "pdfs/02.it.members-club.pdf"
+        },
+        {
+          "title": "Terms of Use for the Central Customer Login and Master Data Management (Falkensteiner ID)",
+          "file": "pdfs/03.it.falkensteinerID.pdf"
+        }
+      ]
     },
     {
       "id": "doc4",
-      "title": "Hrvatski",
-      "description": "Naši uvjeti poslovanja",
-      "file": "pdfs/01.hr.agb.pdf"
-    },
-	{
-      "id": "doc5",
-      "title": "English",
-      "description": "Terms and Conditions - Falkensteiner Members Club",
-      "file": "pdfs/02.en.members-club.pdf"
-    },
-	
-	{
-      "id": "doc8",
-      "title": "Hrvatski",
-      "description": "Opći uvjeti poslovanja „Falkensteiner Members Club",
-      "file": "pdfs/02.hr.members-club.pdf"
-    },
-	
-
-    {
-      "id": "doc6",
-      "title": "Reference Guides",
-      "description": "Three related documents",
+      "title": "Opći Uvjeti Poslovanja",
+      "description": "Hrvatski",
       "files": [
         {
-          "title": "Part A",
-          "file": "pdfs/guide-a.pdf"
+          "title": "General Terms and Conditions of Falkensteiner Hotels & Residences",
+          "file": "pdfs/01.hr.agb.pdf"
         },
         {
-          "title": "Part B",
-          "file": "pdfs/guide-b.pdf"
+          "title": "Opći Uvjeti Poslovanja 'Falkensteiner Members Club'",
+          "file": "pdfs/02.hr.members-club.pdf"
         },
         {
-          "title": "Part C",
-          "file": "pdfs/guide-c.pdf"
+          "title": "Terms of Use for the Central Customer Login and Master Data Management (Falkensteiner ID)",
+          "file": "pdfs/03.hr.falkensteinerID.pdf"
         }
       ]
     }
