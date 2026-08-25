@@ -1,37 +1,46 @@
 {
-  "version": "2026-08-11-01",
-  "title": "FMTG FOM Kiosk",
+  "version": "1.0.1",
+  "title": "Falkensteiner",
   "documents": [
     {
       "id": "doc1",
       "title": "English",
-      "description": "Our Termns and Conditions in English",
-      "file": "pdfs/document1.pdf"
+      "description": "Our Termns and Conditions",
+      "file": "pdfs/01.en.agb.pdf"
     },
     {
       "id": "doc2",
       "title": "Deutsch",
-      "description": "Unsere Allgemeinen Geschäftsbedingungen in Deutsch",
-      "file": "pdfs/document2.pdf"
+      "description": "Unsere Allgemeinen Geschäftsbedingungen",
+      "file": "pdfs/01.de.agb.pdf"
     },
     {
       "id": "doc3",
-      "title": "Français",
-      "description": "Nos conditions générales en français",
-      "file": "pdfs/document3.pdf"
+      "title": "Italiano",
+      "description": "I nostri termini e condizioni",
+      "file": "pdfs/01.it.agb.pdf"
     },
     {
       "id": "doc4",
-      "title": "Español",
-      "description": "Nuestros términos y condiciones en español",
-      "file": "pdfs/document4.pdf"
+      "title": "Hrvatski",
+      "description": "Naši uvjeti poslovanja",
+      "file": "pdfs/01.hr.agb.pdf"
     },
-    {
+	{
       "id": "doc5",
-      "title": "Italiano",
-      "description": "I nostri termini e condizioni in italiano",
-      "file": "pdfs/document5.pdf"
+      "title": "English",
+      "description": "Terms and Conditions - Falkensteiner Members Club",
+      "file": "pdfs/02.en.members-club.pdf"
     },
+	
+	{
+      "id": "doc8",
+      "title": "Hrvatski",
+      "description": "Opći uvjeti poslovanja „Falkensteiner Members Club",
+      "file": "pdfs/02.hr.members-club.pdf"
+    },
+	
+
     {
       "id": "doc6",
       "title": "Reference Guides",
