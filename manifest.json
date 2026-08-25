@@ -4,12 +4,45 @@
   "documents": [
     {
       "id": "doc1",
-      "title": "English",
-      "description": "Our Termns and Conditions",
-      "file": "pdfs/01.en.agb.pdf"
+      "title": "Our Termns and Conditions",
+      "description": "English",
+      "files": [
+        {
+          "title": "General Terms and Conditions of Falkensteiner Hotels & Residences",
+          "file": "pdfs/01.en.agb.pdf"
+        },
+        {
+          "title": "General Terms and Conditions 'Falkensteiner Members Club'",
+          "file": "pdfs/02.en.members-club.pdf"
+        },
+        {
+          "title": "Terms of Use for the Central Customer Login and Master Data Management (Falkensteiner ID)",
+          "file": "pdfs/03.en.falkensteinerID.pdf"
+        }
+      ]
     },
     {
       "id": "doc2",
+      "title": "Unsere Allgemeinen Geschäftsbedingungen",
+      "description": "Deutsch",
+      "files": [
+        {
+          "title": "Allgemeine Geschäftsbedingungen der Falkensteiner Hotels & Residences",
+          "file": "pdfs/01.de.agb.pdf"
+        },
+        {
+          "title": "Allgemeine Geschäftsbedingungen 'Falkensteiner Members Club'",
+          "file": "pdfs/02.de.members-club.pdf"
+        },
+        {
+          "title": "Terms of Use for the Central Customer Login and Master Data Management (Falkensteiner ID)",
+          "file": "pdfs/03.de.falkensteinerID.pdf"
+        }
+      ]
+    },
+	
+    {
+      "id": "doc21",
       "title": "Deutsch",
       "description": "Unsere Allgemeinen Geschäftsbedingungen",
       "file": "pdfs/01.de.agb.pdf"
