@@ -4,7 +4,7 @@
   "documents": [
     {
       "id": "doc1",
-      "title": "Our Termns and Conditions",
+      "title": "Our Terms and Conditions",
       "description": "English",
       "files": [
         {
@@ -23,7 +23,7 @@
     },
     {
       "id": "doc2",
-      "title": "Unsere Allgemeinen Geschäftsbedingungen",
+      "title": "Unsere Allgemeine Geschäftsbedingungen",
       "description": "Deutsch",
       "files": [
         {
