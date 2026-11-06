@@ -71,7 +71,10 @@
       font-size: 16px;
       cursor: pointer;
     }
-    #sublist-back-btn:active { opacity: 0.8; }
+
+    #sublist-back-btn:active {
+      opacity: 0.8;
+    }
 
     .item-list {
       flex: 1;
@@ -131,6 +134,24 @@
       color: var(--muted);
       font-size: 12px;
       padding-top: 10px;
+    }
+
+    .list-flag {
+      font-size: 40px;
+      line-height: 1;
+      margin-right: 20px;
+      flex-shrink: 0;
+    }
+
+    .list-item-main {
+      display: flex;
+      align-items: center;
+    }
+
+    #sublist-flag {
+      font-size: 44px;
+      line-height: 1;
+      margin-bottom: 8px;
     }
 
     /* ---------- VIEWER VIEW ---------- */
@@ -211,7 +232,7 @@
   <div id="toc-view" class="list-view">
     <div id="toc-header">
       <h1 id="site-title">General Terms of Service</h1>
-		<!-- <p>Tap a document to view it</p> -->
+      <!-- <p>Tap a document to view it</p> -->
     </div>
     <div id="toc-list" class="item-list"></div>
     <div id="toc-footer"><span id="last-checked"></span></div>
@@ -221,6 +242,7 @@
   <div id="sublist-view" class="list-view" style="display:none;">
     <div id="sublist-header">
       <button id="sublist-back-btn">‹ Back</button>
+      <div id="sublist-flag"></div>
       <h1 id="sublist-title"></h1>
       <p id="sublist-description"></p>
     </div>
@@ -263,6 +285,7 @@
     const sublistTitle = document.getElementById('sublist-title');
     const sublistDescription = document.getElementById('sublist-description');
     const sublistBackBtn = document.getElementById('sublist-back-btn');
+    const sublistFlag = document.getElementById('sublist-flag');
 
     const viewerTitle = document.getElementById('viewer-title');
     const pdfFrame = document.getElementById('pdf-frame');
@@ -302,11 +325,14 @@
         const item = document.createElement('div');
         item.className = 'list-item';
         item.innerHTML = `
-          <div class="list-item-text">
-            <h2>${escapeHtml(doc.title)}</h2>
-            <p>${escapeHtml(doc.description || '')}</p>
-          </div>
-          <div class="list-arrow">›</div>
+            <div class="list-item-main">
+              ${doc.flag ? `<div class="list-flag">${doc.flag}</div>` : ''}
+              <div class="list-item-text">
+                <h2>${escapeHtml(doc.title)}</h2>
+                <p>${escapeHtml(doc.description || '')}</p>
+              </div>
+            </div>
+        <div class="list-arrow">›</div>
         `;
         item.addEventListener('click', () => handleTocClick(doc));
         tocList.appendChild(item);
@@ -325,6 +351,7 @@
     function openSublist(doc) {
       sublistTitle.textContent = doc.title;
       sublistDescription.textContent = doc.description || '';
+      sublistFlag.textContent = doc.flag || '';
       sublistList.innerHTML = "";
 
       doc.files.forEach(sub => {

@@ -1,9 +1,10 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "title": "Falkensteiner",
   "documents": [
     {
       "id": "doc1",
+      "flag": "🇬🇧",
       "title": "Our Terms and Conditions",
       "description": "English",
       "files": [
@@ -23,6 +24,7 @@
     },
     {
       "id": "doc2",
+      "flag": "🇩🇪",
       "title": "Unsere Allgemeine Geschäftsbedingungen",
       "description": "Deutsch",
       "files": [
@@ -42,6 +44,7 @@
     },
     {
       "id": "doc3",
+      "flag": "🇮🇹",
       "title": "Condizioni Generali di Contratto",
       "description": "Italiano",
       "files": [
@@ -61,6 +64,7 @@
     },
     {
       "id": "doc4",
+      "flag": "🇭🇷",
       "title": "Opći Uvjeti Poslovanja",
       "description": "Hrvatski",
       "files": [
